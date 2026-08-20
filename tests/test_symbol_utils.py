@@ -52,6 +52,23 @@ class TestNormalizeSymbol(unittest.TestCase):
     def test_empty_input_passthrough(self):
         self.assertEqual(normalize_symbol(""), "")
 
+    def test_hk_numeric_codes_map_to_yahoo_four_digit(self):
+        # 港交所 5 位 / 未补零 -> Yahoo 4 位 .HK
+        self.assertEqual(normalize_symbol("00992.HK"), "0992.HK")  # 联想
+        self.assertEqual(normalize_symbol("992.HK"), "0992.HK")
+        self.assertEqual(normalize_symbol("09992.HK"), "9992.HK")  # 泡泡玛特
+        self.assertEqual(normalize_symbol("00700.HK"), "0700.HK")
+        self.assertEqual(normalize_symbol("5.HK"), "0005.HK")
+        # 已经是 Yahoo 4 位代码的保持不变
+        self.assertEqual(normalize_symbol("0700.HK"), "0700.HK")
+        self.assertEqual(normalize_symbol("0992.HK"), "0992.HK")
+        self.assertEqual(normalize_symbol("1810.HK"), "1810.HK")
+        # 去零后仍超过 4 位（权证等）不去掉有效数字
+        self.assertEqual(normalize_symbol("40000.HK"), "40000.HK")
+        # A 股 6 位代码不得套用港股规则
+        self.assertEqual(normalize_symbol("000404.SZ"), "000404.SZ")
+        self.assertEqual(normalize_symbol("600519.SS"), "600519.SS")
+
 
 @pytest.mark.unit
 class TestNoMarketDataError(unittest.TestCase):

@@ -21,6 +21,8 @@ from tradingagents.dataflows.symbol_utils import normalize_symbol
     ("AAPL", "AAPL"),
     ("GC=F", "GC=F"),
     ("600519.SS", "600519.SS"),
+    ("00992.HK", "0992.HK"),
+    ("00700.HK", "0700.HK"),
     ("EURUSD", "EURUSD=X"),
 ])
 def test_normalize_symbol_crypto_and_passthrough(raw, expected):
@@ -33,6 +35,7 @@ def test_normalize_symbol_crypto_and_passthrough(raw, expected):
     ("EURUSD=X", True),
     ("AAPL", True),
     ("0700.HK", True),
+    ("00992.HK", True),
     ("^GSPC", True),
     ("", True),                 # empty -> defaults to SPY downstream
     ("bad symbol!", False),     # space + '!' rejected

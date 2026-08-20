@@ -74,3 +74,19 @@ class TestTool:
             {"symbol": "COF", "curr_date": "2026-05-20"}
         )
         assert "Verified market data snapshot for COF" in out
+
+    def test_tool_returns_sentinel_instead_of_raising(self, monkeypatch):
+        from tradingagents.agents.utils.market_data_validation_tools import (
+            get_verified_market_snapshot,
+        )
+        from tradingagents.dataflows.errors import NoMarketDataError
+
+        def _raise(_symbol, _curr_date):
+            raise NoMarketDataError("00992.HK", "00992.HK", "Yahoo Finance returned no rows")
+
+        monkeypatch.setattr(validator, "load_ohlcv", _raise)
+        out = get_verified_market_snapshot.invoke(
+            {"symbol": "00992.HK", "curr_date": "2026-08-13"}
+        )
+        assert "NO_DATA_AVAILABLE" in out
+        assert "00992.HK" in out
